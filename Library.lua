@@ -1332,18 +1332,16 @@ do
                 KeyPicker:Update();
             end
 
-            if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
+
+            if Input.UserInputType == Enum.UserInputType.Touch or Input.UserInputType == Enum.UserInputType.MouseButton1 then
                 local AbsPos, AbsSize = ModeSelectOuter.AbsolutePosition, ModeSelectOuter.AbsoluteSize;
 
-                if Input.UserInputType == Enum.UserInputType.MouseButton1 or #Input.UserInputType == Enum.UserInputType.Touch then
-                    local touchPosition = (Input.UserInputType == Enum.UserInputType.MouseButton1) and Vector2.new(Mouse.X, Mouse.Y) or Input.Position
+                if Mouse.X < AbsPos.X or Mouse.X > AbsPos.X + AbsSize.X
+                    or Mouse.Y < (AbsPos.Y - 20 - 1) or Mouse.Y > AbsPos.Y + AbsSize.Y then
 
-                    if touchPosition.X < AbsPos.X or touchPosition.X > AbsPos.X + AbsSize.X
-                        or touchPosition.Y < (AbsPos.Y - 20 - 1) or touchPosition.Y > AbsPos.Y + AbsSize.Y then
-                        ModeSelectOuter.Visible = false;
-                    end
-                end
-            end
+                    ModeSelectOuter.Visible = false;
+                end;
+            end;
         end))
 
         Library:GiveSignal(InputService.InputEnded:Connect(function(Input)
