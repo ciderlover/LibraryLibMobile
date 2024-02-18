@@ -167,17 +167,10 @@ function Library:MakeDraggable(Instance, Cutoff)
     local function onTouchOrClick(Input)
         if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
             local ObjPos;
-            if Input.UserInputType == Enum.UserInputType.MouseButton1 then
-                ObjPos = Vector2.new(
-                    Input.Position.X - Instance.AbsolutePosition.X,
-                    Input.Position.Y - Instance.AbsolutePosition.Y
-                );
-            else -- Touch input
-                ObjPos = Vector2.new(
-                    Input.Position.X - Instance.AbsolutePosition.X,
-                    Input.Position.Y - Instance.AbsolutePosition.Y
-                );
-            end
+            ObjPos = Vector2.new(
+                Input.Position.X - Instance.AbsolutePosition.X,
+                Input.Position.Y - Instance.AbsolutePosition.Y
+            );
 
             if ObjPos.Y > (Cutoff or 40) then
                 return;
@@ -2148,7 +2141,7 @@ do
                 local diff = startPos - (Fill.AbsolutePosition.X + startFillPos)
 
                 while InputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) or (Input.UserInputType == Enum.UserInputType.Touch and Input.UserInputState == Enum.UserInputState.Change) do
-                    local newPos = (Input.UserInputType == Enum.UserInputType.MouseButton1) and Mouse.X or Input.Position.X
+                    local newPos = (Input.UserInputType == Enum.UserInputType.Touch or Input.UserInputType == Enum.UserInputType.MouseButton1) and Mouse.X or Input.Position.X
                     local newX = math.clamp(startFillPos + (newPos - startPos) + diff, 0, Slider.MaxSize)
 
                     local newValue = Slider:GetValueFromXOffset(newX)
