@@ -2124,12 +2124,16 @@ do
 
         SliderInner.InputBegan:Connect(function(Input)
             if (Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch) and not Library:MouseIsOverOpenedFrame() then
-                local startPos = (Input.UserInputType == Enum.UserInputType.Touch or Input.UserInputType == Enum.UserInputType.MouseButton1) and Mouse.X or Input.Position.X
+                local isTouch = Input.UserInputType == Enum.UserInputType.Touch
+                local startPos = isTouch and Input.Position.X or Mouse.X
                 local startFillPos = Fill.Size.X.Offset
                 local diff = startPos - (Fill.AbsolutePosition.X + startFillPos)
 
-                while (Input.UserInputState == Enum.UserInputState.Change) do
-                    local newPos = (Input.UserInputType == Enum.UserInputType.Touch or Input.UserInputType == Enum.UserInputType.MouseButton1) and Mouse.X or Input.Position.X
+                local isInputChangedConnected = true
+                local isInputEndedConnected = true
+
+                while isInputChangedConnected do
+                    local newPos = isTouch and Input.Position.X or Mouse.X
                     local newX = math.clamp(startFillPos + (newPos - startPos) + diff, 0, Slider.MaxSize)
 
                     local newValue = Slider:GetValueFromXOffset(newX)
@@ -2143,7 +2147,7 @@ do
                         Library:SafeCallback(Slider.Changed, Slider.Value)
                     end
 
-                    RenderStepped:Wait()
+                    task.wait()  -- You may use wait() or RenderStepped:Wait() based on your preference
                 end
 
                 Library:AttemptSave()
