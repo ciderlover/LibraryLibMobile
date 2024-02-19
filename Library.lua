@@ -2124,11 +2124,11 @@ do
 
         SliderInner.InputBegan:Connect(function(Input)
             if (Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch) and not Library:MouseIsOverOpenedFrame() then
-                local startPos = (Input.UserInputType == Enum.UserInputType.MouseButton1) and Mouse.X or Input.Position.X
+                local startPos = (Input.UserInputType == Enum.UserInputType.Touch or Input.UserInputType == Enum.UserInputType.MouseButton1) and Mouse.X or Input.Position.X
                 local startFillPos = Fill.Size.X.Offset
                 local diff = startPos - (Fill.AbsolutePosition.X + startFillPos)
 
-                while InputService:IsMouseButtonPressed(Enum.UserInputType.Touch) or (Input.UserInputType == Enum.UserInputType.Touch and Input.UserInputState == Enum.UserInputState.Change) do
+                while (Input.UserInputState == Enum.UserInputState.Change) do
                     local newPos = (Input.UserInputType == Enum.UserInputType.Touch or Input.UserInputType == Enum.UserInputType.MouseButton1) and Mouse.X or Input.Position.X
                     local newX = math.clamp(startFillPos + (newPos - startPos) + diff, 0, Slider.MaxSize)
 
