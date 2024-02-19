@@ -2122,17 +2122,19 @@ do
             Library:SafeCallback(Slider.Changed, Slider.Value);
         end;
 
+        local isInputChangedConnected = true
+        local isInputEndedConnected = false
+
         SliderInner.InputBegan:Connect(function(Input)
+            isInputEndedConnected = false
+
             if (Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch) and not Library:MouseIsOverOpenedFrame() then
                 local isTouch = Input.UserInputType == Enum.UserInputType.Touch
                 local startPos = isTouch and Input.Position.X or Mouse.X
                 local startFillPos = Fill.Size.X.Offset
                 local diff = startPos - (Fill.AbsolutePosition.X + startFillPos)
 
-                local isInputChangedConnected = true
-                local isInputEndedConnected = true
-
-                while isInputChangedConnected do
+                while isInputChangedConnected and not isInputEndedConnected do
                     local newPos = isTouch and Input.Position.X or Mouse.X
                     local newX = math.clamp(startFillPos + (newPos - startPos) + diff, 0, Slider.MaxSize)
 
@@ -2147,11 +2149,15 @@ do
                         Library:SafeCallback(Slider.Changed, Slider.Value)
                     end
 
-                    task.wait()  -- You may use wait() or RenderStepped:Wait() based on your preference
+                    task.wait()
                 end
 
                 Library:AttemptSave()
             end
+        end)
+
+        SliderInner.InputEnded:Connect(function()
+            isInputEndedConnected = true
         end)
 
         Slider:Display();
