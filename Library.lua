@@ -189,7 +189,7 @@ function Library:MakeDraggable(Instance, Cutoff)
                 return;
             end;
 
-            while InputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) or InputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) do
+            while InputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) or InputService:IsMouseButtonPressed(Enum.UserInputType.Touch) do
                 update_position(input, ObjPos)
                 RenderStepped:Wait();
             end;
