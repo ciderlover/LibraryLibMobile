@@ -164,42 +164,38 @@ end;
 function Library:MakeDraggable(Instance, Cutoff)
     Instance.Active = true;
 
-    local function onTouchOrClick(Input)
-        if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
-            local ObjPos;
-            ObjPos = Vector2.new(
-                Input.Position.X - Instance.AbsolutePosition.X,
-                Input.Position.Y - Instance.AbsolutePosition.Y
-            );
-
-            if ObjPos.Y > (Cutoff or 40) then
-                return;
-            end
-
-            local function onMove()
-                Instance.Position = UDim2.new(
-                    0,
-                    Input.Position.X - ObjPos.X + (Instance.Size.X.Offset * Instance.AnchorPoint.X),
-                    0,
-                    Input.Position.Y - ObjPos.Y + (Instance.Size.Y.Offset * Instance.AnchorPoint.Y)
-                );
-            end
-
-            local function onStop()
-                RunService:UnbindFromRenderStep("Draggable");
-            end
-
-            InputService.InputChanged:Connect(onMove)
-            InputService.InputEnded:Connect(onStop)
-
-            RunService:BindToRenderStep("Draggable", Enum.RenderPriority.Input.Value, function()
-                onMove();
-            end)
+    local function get_cursor_position(input)
+        if input.UserInputType == Enum.UserInputType.Touch then
+            return input.Position
+        else
+            return Vector2.new(input.Position.X, input.Position.Y)
         end
     end
 
-    Instance.InputBegan:Connect(onTouchOrClick)
-end
+    local function update_position(instance, obj_pos)
+        instance.Position = UDim2.new(
+            0,
+            get_cursor_position(InputService.InputChanged) - obj_pos.X + (instance.Size.X.Offset * instance.AnchorPoint.X),
+            0,
+            get_cursor_position(InputService.InputChanged) - obj_pos.Y + (instance.Size.Y.Offset * instance.AnchorPoint.Y)
+        )
+    end
+
+    Instance.InputBegan:Connect(function(Input)
+        if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
+            local ObjPos = get_cursor_position(Input) - Instance.AbsolutePosition
+
+            if ObjPos.Y > (Cutoff or 40) then
+                return;
+            end;
+
+            while InputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) or InputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) do
+                update_position(input, ObjPos)
+                RenderStepped:Wait();
+            end;
+        end;
+    end)
+end;
 
 function Library:AddToolTip(InfoStr, HoverInstance)
     local X, Y = Library:GetTextBounds(InfoStr, Library.Font, 14);
